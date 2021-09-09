@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BadOrder.Api.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,6 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace BadOrder.Api
 {
@@ -26,7 +30,13 @@ namespace BadOrder.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // TODO learn how to use integers for user id
+            //BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
+            BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
 
+            var mongoDbSettings = 
+                Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
